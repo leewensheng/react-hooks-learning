@@ -1,20 +1,56 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Component, useDebugValue, useRef, useCallback, useMemo} from 'react'
 import ReactDOM from 'react-dom'
+import { callStateFunction, stateFunction } from "./demo";
 
+
+//callStateFunction(stateFunction)
 
 function Demo(){
     const [time, setTime] = useState(Date.now())
+    const [count, setCount] = useState(0)
+    const prevCount = useRef()
+    console.log('prev count', prevCount.current)
     useEffect(() => {
-        document.title = time
+        console.log('componentDidMount')
         return () => {
-            setTimeout(() => {
-                document.title = 'clear effect'
-            }, 1000);
+            console.log('componentWillUnmount')
+        }
+    },[])
+    useEffect(() => {
+        prevCount.current = count
+        if(count > 0) {
+         console.log('componentDidUpdate')
         }
     })
+    let mycallBack = useCallback(() => {
+        console.log('useCallback', count)
+    },[])
+    let memoResult= useMemo(count => {
+        console.log('memoried function called')
+        return <div></div>
+    },[count])
+    mycallBack()
+    useDebugValue('MyDemo')
     return (
-        <div onClick={e => setTime(Date.now())}>{time}</div>
+        <div onClick={e => setCount(count + 1)}>{count}</div>
     )
 }
 
-ReactDOM.render(<Demo />, document.getElementById('root'))
+class App extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            unmountDemo:false
+        }
+    }
+    render(){
+        return (
+            <div>
+                {!this.state.unmountDemo && <Demo /> }
+                <button onClick={e => this.setState({unmountDemo: true})} >卸载demo</button>
+                <button onClick={e => this.setState({unmountDemo: false})} >挂载demo</button>
+            </div>
+        )
+    }
+}
+ReactDOM.render(<App />, document.getElementById('root'))
