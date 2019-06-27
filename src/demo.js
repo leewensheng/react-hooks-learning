@@ -37,6 +37,7 @@ function useState(defaultValue) {
   currentHookIndex ++
   return [value, stateHook]
 }
+
 function useEffect(effect) {
   let index = currentHookIndex
   hooks[index] = effect

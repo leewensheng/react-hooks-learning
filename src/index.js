@@ -4,6 +4,13 @@ import { callStateFunction, stateFunction } from "./demo";
 
 
 //callStateFunction(stateFunction)
+function useMyHook() {
+    let [res, setRes] = useState([])
+    useEffect(() => {
+        fetch('./test.json').then(res => setRes(res.json()))
+    },[])
+    return res
+  }
 
 function Demo(){
     const [time, setTime] = useState(Date.now())
@@ -29,10 +36,13 @@ function Demo(){
         console.log('memoried function called')
         return <div></div>
     },[count])
+    const myHookRes =  useMyHook()
     mycallBack()
     useDebugValue('MyDemo')
     return (
-        <div onClick={e => setCount(count + 1)}>{count}</div>
+        <div >
+            <button style={{width: 200}} onClick={e => setCount(count + 1)}>{count}</button>
+        </div>
     )
 }
 
